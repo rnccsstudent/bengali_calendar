@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>বাংলা ক্যালেন্ডার</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>বাংলা ক্যালেন্ডার</h1>
+    <div id="today-date" class="today-date"></div>
+
+    <div class="calendar-nav">
+      <button id="prev-month">&#8592; আগের মাস</button>
+      <div id="month-year"></div>
+      <button id="next-month">পরের মাস &#8594;</button>
+    </div>
+
+    <table id="calendar" class="calendar">
+      <thead>
+        <tr>
+          <th>রবি</th>
+          <th>সোম</th>
+          <th>মঙ্গল</th>
+          <th>বুধ</th>
+          <th>বৃহস্পতি</th>
+          <th>শুক্র</th>
+          <th>শনি</th>
+        </tr>
+      </thead>
+      <tbody id="calendar-body"></tbody>
+    </table>
+  </div>
+
+  <script src="calendar.js"></script>
+</body>
+</html>
