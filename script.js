@@ -1,1 +1,75 @@
+const userLang = localStorage.getItem('lang') || 'bn';
+const userEvents = JSON.parse(localStorage.getItem('events') || '[]');
+const festivals = {
+  '1 Boishakh': 'নববর্ষ',
+  '15 August': 'স্বাধীনতা দিবস',
+  '2 January': 'বিশেষ পূজা',
+  // Add more Bengali festivals here
+};
 
+function toggleLanguage() {
+  const current = localStorage.getItem('lang') || 'bn';
+  const newLang = current === 'bn' ? 'en' : 'bn';
+  localStorage.setItem('lang', newLang);
+  location.reload();
+}
+
+function addEvent() {
+  const eventInput = document.getElementById('eventInput');
+  const eventText = eventInput.value;
+  if (eventText) {
+    userEvents.push(eventText);
+    localStorage.setItem('events', JSON.stringify(userEvents));
+    displayEvents();
+    eventInput.value = '';
+  }
+}
+
+function displayEvents() {
+  const eventList = document.getElementById('eventList');
+  eventList.innerHTML = '';
+  userEvents.forEach((ev, i) => {
+    const li = document.createElement('li');
+    li.textContent = ev;
+    eventList.appendChild(li);
+  });
+}
+
+function getTithiInfo() {
+  // Simulated moon phase (for example only)
+  const moonPhases = ['অমাবস্যা', 'শুক্ল পক্ষ', 'পূর্ণিমা', 'কৃষ্ণ পক্ষ'];
+  const today = new Date();
+  return moonPhases[today.getDate() % moonPhases.length];
+}
+
+function getBengaliDate(gDate = new Date()) {
+  const offset = 593; // Bengali year offset
+  const months = ['বৈশাখ', 'জ্যৈষ্ঠ', 'আষাঢ়', 'শ্রাবণ', 'ভাদ্র', 'আশ্বিন', 'কার্তিক', 'অগ্রহায়ণ', 'পৌষ', 'মাঘ', 'ফাল্গুন', 'চৈত্র'];
+  const base = new Date(gDate.getFullYear(), 3, 14);
+  const diff = Math.floor((gDate - base) / (1000 * 60 * 60 * 24));
+  const monthIndex = Math.floor((diff + 365) % 365 / 30.5);
+  const day = (diff % 30) + 1;
+  const year = gDate.getFullYear() + offset;
+  return `${day} ${months[monthIndex]} ${year}`;
+}
+
+function displayCalendar() {
+  const calDiv = document.getElementById('calendar');
+  const date = new Date();
+  const bDate = getBengaliDate(date);
+  const tithi = getTithiInfo();
+  calDiv.innerHTML = `<h2>আজ: ${bDate}</h2>`;
+  document.getElementById('tithi').innerHTML = `<strong>তিথি:</strong> ${tithi}`;
+
+  // Check festivals
+  Object.keys(festivals).forEach((key) => {
+    if (bDate.startsWith(key)) {
+      const fest = document.createElement('p');
+      fest.innerHTML = `<strong>আজকের উৎসব:</strong> ${festivals[key]}`;
+      calDiv.appendChild(fest);
+    }
+  });
+}
+
+displayCalendar();
+displayEvents();
