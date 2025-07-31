@@ -2,58 +2,111 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Bengali Calendar Web App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bengali Calendar & Reminders</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      padding: 20px;
-      background: #f4f4f4;
-      color: #333;
+      padding: 10px;
+      margin: 0;
+      background: #f9f9f9;
     }
-    h1 {
+
+    h2, h3 {
       text-align: center;
-      color: #004080;
     }
-    .calendar {
-      display: flex;
-      justify-content: center;
-      margin: 20px 0;
-    }
+
     iframe {
-      width: 500px;
-      height: 500px;
+      width: 100% !important;
+      max-width: 400px;
+      height: 300px;
       border: none;
+      display: block;
+      margin: 0 auto;
     }
-    .section {
-      margin-top: 30px;
-      padding: 15px;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+
+    button {
+      padding: 10px;
+      margin: 5px 0;
+      width: 100%;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
     }
-    .holidays ul {
+
+    ul {
       list-style: none;
       padding: 0;
     }
-    .holidays li {
-      margin-bottom: 8px;
-      padding-left: 10px;
+
+    li {
+      background: white;
+      margin: 5px 0;
+      padding: 10px;
+      border-radius: 4px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
-    .reminders {
-      display: none; /* Hide reminders section initially */
+
+    input[type="text"] {
+      width: calc(100% - 100px);
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+
+    #add-reminder {
+      width: 80px;
+      padding: 10px;
+      font-size: 16px;
+      background: #2196F3;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      margin-left: 10px;
+    }
+
+    @media only screen and (max-width: 600px) {
+      iframe {
+        height: 250px;
+      }
+
+      h3 {
+        font-size: 18px;
+      }
     }
   </style>
 </head>
 <body>
 
-  <h1>Bengali Calendar Web App (West Bengal - 2025)</h1>
+  <h2>📅 Bengali Calendar 2025</h2>
 
-  <div class="calendar">
-    <iframe src="https://bengalicalendar.com/embed/index.php" allowtransparency="true"></iframe>
+  <!-- Google Bengali Calendar -->
+  <iframe 
+    src="https://calendar.google.com/calendar/embed?src=en.indian%23holiday%40group.v.calendar.google.com&ctz=Asia%2FKolkata">
+  </iframe>
+
+  <h3>Add a Reminder</h3>
+  <div>
+    <input type="text" id="reminder-input" placeholder="Enter your reminder here">
+    <button id="add-reminder">Add</button>
   </div>
 
-  <div class="section holidays">
-    <h2>2025 Bengali Holidays (West Bengal)</h2>
+  <br>
+  <button onclick="toggleSection('reminders')">Toggle Reminders</button>
+  <button onclick="toggleSection('holidays')">Toggle Holidays</button>
+
+  <!-- Reminder List -->
+  <div id="reminders" style="display: none;">
+    <h3>Your Reminders</h3>
+    <ul id="reminder-list"></ul>
+  </div>
+
+  <!-- Holiday List -->
+  <div id="holidays" style="display: none;">
+    <h3>2025 Bengali Holidays (West Bengal)</h3>
     <ul>
       <li>Pohela Boishakh – April 14</li>
       <li>Rath Yatra – June 28</li>
@@ -66,50 +119,23 @@
     </ul>
   </div>
 
-  <div class="section reminders" id="reminderSection">
-    <h2>Your Reminders</h2>
-    <ul id="reminderList"></ul>
-  </div>
-
-  <div class="section">
-    <h2>Add a Reminder</h2>
-    <form id="reminderForm">
-      <label>Date: <input type="date" id="reminderDate" required></label><br><br>
-      <label>Note: <input type="text" id="reminderText" required></label><br><br>
-      <button type="submit">Add Reminder</button>
-    </form>
-  </div>
-
   <script>
-    const reminderForm = document.getElementById('reminderForm');
-    const reminderList = document.getElementById('reminderList');
-    const reminderSection = document.getElementById('reminderSection');
-
-    function loadReminders() {
-      const saved = JSON.parse(localStorage.getItem('reminders') || '[]');
-      if (saved.length > 0) {
-        reminderSection.style.display = 'block';
-        reminderList.innerHTML = '';
-        saved.forEach(r => {
-          const li = document.createElement('li');
-          li.textContent = `${r.date}: ${r.text}`;
-          reminderList.appendChild(li);
-        });
-      }
+    function toggleSection(id) {
+      const el = document.getElementById(id);
+      el.style.display = (el.style.display === "none") ? "block" : "none";
     }
 
-    reminderForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const date = document.getElementById('reminderDate').value;
-      const text = document.getElementById('reminderText').value;
-      let reminders = JSON.parse(localStorage.getItem('reminders') || '[]');
-      reminders.push({ date, text });
-      localStorage.setItem('reminders', JSON.stringify(reminders));
-      loadReminders();
-      reminderForm.reset();
+    document.getElementById('add-reminder').addEventListener('click', function () {
+      const input = document.getElementById('reminder-input');
+      const reminder = input.value.trim();
+      if (reminder) {
+        const li = document.createElement('li');
+        li.textContent = reminder;
+        document.getElementById('reminder-list').appendChild(li);
+        input.value = "";
+      }
     });
-
-    window.onload = loadReminders;
   </script>
+
 </body>
 </html>
