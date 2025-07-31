@@ -3,125 +3,113 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>বাংলা ক্যালেন্ডার</title>
-  <link rel="stylesheet" href="style.css">
+  <title>বাংলা কেলেন্ডার</title>
+  <style>
+    body {
+      font-family: 'Noto Sans Bengali', sans-serif;
+      text-align: center;
+      padding: 20px;
+      background: #f2f2f2;
+    }
+    .calendar-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .reminder-section {
+      max-width: 500px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input, button {
+      padding: 10px;
+      margin: 5px;
+    }
+    #reminderList li {
+      text-align: left;
+    }
+    .language-toggle {
+      margin-top: 10px;
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <h1 id="title">বাংলা ক্যালেন্ডার</h1>
-    <button onclick="toggleLanguage()">ভাষা পরিবর্তন</button>
-    <p id="todayDate"></p>
-    <p id="bengaliDate"></p>
-    <p id="tithi"></p>
-    <p id="moonPhase"></p>
-    <h2>উৎসব ও ছুটি</h2>
-    <ul id="festivals"></ul>
-    
-    <h2>আপনার ইভেন্ট</h2>
-    <form id="eventForm">
-      <input type="date" id="eventDate" required>
-      <input type="text" id="eventText" placeholder="ইভেন্টের বিবরণ" required>
-      <button type="submit">যোগ করুন</button>
-    </form>
-    <ul id="userEvents"></ul>
+
+  <h1 id="title">বাংলা কেলেন্ডার</h1>
+
+  <div class="calendar-container">
+    <iframe
+      src="https://bengalicalendar.com/embed/index.php"
+      frameborder="0"
+      scrolling="no"
+      marginwidth="0"
+      marginheight="0"
+      style="border:0px; overflow:hidden; width:221px; height:205px;"
+      allowtransparency="true">
+    </iframe>
+  </div>
+
+  <div class="reminder-section">
+    <h2 id="reminderTitle">আপনার ইভেন্ট / রিমাইন্ডার</h2>
+    <input type="text" id="reminderInput" placeholder="লিখুন আপনার রিমাইন্ডার">
+    <button onclick="addReminder()">এড করুন</button>
+    <ul id="reminderList"></ul>
+  </div>
+
+  <div class="language-toggle">
+    <button onclick="toggleLanguage()">🌍 Switch to English</button>
   </div>
 
   <script>
-    const title = document.getElementById("title");
-    const todayDate = document.getElementById("todayDate");
-    const bengaliDate = document.getElementById("bengaliDate");
-    const tithiEl = document.getElementById("tithi");
-    const moonPhaseEl = document.getElementById("moonPhase");
-    const festivalsList = document.getElementById("festivals");
-    const userEvents = document.getElementById("userEvents");
+    const reminders = JSON.parse(localStorage.getItem('reminders') || '[]');
+    const reminderList = document.getElementById('reminderList');
 
-    let lang = localStorage.getItem("lang") || "bn";
-    const events = JSON.parse(localStorage.getItem("userEvents") || "[]");
-
-    function updateLanguage() {
-      title.innerText = lang === "bn" ? "বাংলা ক্যালেন্ডার" : "Bengali Calendar";
-    }
-
-    function toggleLanguage() {
-      lang = lang === "bn" ? "en" : "bn";
-      localStorage.setItem("lang", lang);
-      location.reload();
-    }
-
-    function getTodayDate() {
-      const now = new Date();
-      const dateStr = now.toLocaleDateString(lang === "bn" ? "bn-BD" : "en-US", {
-        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    function displayReminders() {
+      reminderList.innerHTML = '';
+      reminders.forEach((r, index) => {
+        const li = document.createElement('li');
+        li.textContent = r;
+        const delBtn = document.createElement('button');
+        delBtn.textContent = '❌';
+        delBtn.onclick = () => {
+          reminders.splice(index, 1);
+          saveReminders();
+        };
+        li.appendChild(delBtn);
+        reminderList.appendChild(li);
       });
-      todayDate.innerText = lang === "bn" ? `আজকের তারিখ: ${dateStr}` : `Today's Date: ${dateStr}`;
     }
 
-    function getBengaliDate() {
-      // Accurate Panjika-based Bengali date conversion (approximate)
-      const base = new Date(2025, 3, 14); // ১ বৈশাখ, ১৪৩২ for 14 April 2025
-      const now = new Date();
-      const diffDays = Math.floor((now - base) / (1000 * 60 * 60 * 24));
-      const banglaMonths = ["বৈশাখ", "জ্যৈষ্ঠ", "আষাঢ়", "শ্রাবণ", "ভাদ্র", "আশ্বিন", "কার্তিক", "অগ্রহায়ণ", "পৌষ", "মাঘ", "ফাল্গুন", "চৈত্র"];
-      let month = Math.floor(diffDays / 30) % 12;
-      let day = (diffDays % 30) + 1;
-      let year = 1432 + Math.floor(diffDays / 365);
-
-      bengaliDate.innerText = lang === "bn" ? `বাংলা তারিখ: ${day} ${banglaMonths[month]}, ${year}` : `Bengali Date: ${day} ${banglaMonths[month]}, ${year}`;
-    }
-
-    function getTithiAndMoonPhase() {
-      const tithis = ["প্রতিপদ", "দ্বিতীয়া", "তৃতীয়া", "চতুর্থী", "পঞ্চমী", "ষষ্ঠী", "সপ্তমী", "অষ্টমী", "নবমী", "দশমী", "একাদশী", "দ্বাদশী", "ত্রয়োদশী", "চতুর্দশী", "পূর্ণিমা/অমাবস্যা"];
-      const now = new Date();
-      const tithi = tithis[now.getDate() % 15];
-      const phases = ["নিউ মুন", "ওয়ান ক্রিসেন্ট", "হাফ মুন", "ফুল মুন"];
-      const phase = phases[Math.floor(now.getDate() % 4)];
-
-      tithiEl.innerText = lang === "bn" ? `তিথি: ${tithi}` : `Tithi: ${tithi}`;
-      moonPhaseEl.innerText = lang === "bn" ? `চন্দ্রাবস্থা: ${phase}` : `Moon Phase: ${phase}`;
-    }
-
-    function loadFestivals() {
-      const festivalMap = {
-        "01-01": "১ জানুয়ারি - ইংরেজি নববর্ষ",
-        "14-04": "১৪ এপ্রিল - বাংলা নববর্ষ",
-        "15-08": "১৫ আগস্ট - স্বাধীনতা দিবস",
-        "02-10": "২ অক্টোবর - গান্ধী জয়ন্তী",
-        "25-12": "২৫ ডিসেম্বর - বড়দিন"
-      };
-      const now = new Date();
-      const key = `${String(now.getDate()).padStart(2, '0')}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-      if (festivalMap[key]) {
-        const li = document.createElement("li");
-        li.innerText = festivalMap[key];
-        festivalsList.appendChild(li);
+    function addReminder() {
+      const input = document.getElementById('reminderInput');
+      const value = input.value.trim();
+      if (value) {
+        reminders.push(value);
+        input.value = '';
+        saveReminders();
       }
     }
 
-    document.getElementById("eventForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-      const date = document.getElementById("eventDate").value;
-      const text = document.getElementById("eventText").value;
-      events.push({ date, text });
-      localStorage.setItem("userEvents", JSON.stringify(events));
-      showUserEvents();
-      this.reset();
-    });
-
-    function showUserEvents() {
-      userEvents.innerHTML = "";
-      events.forEach(ev => {
-        const li = document.createElement("li");
-        li.innerText = `${ev.date}: ${ev.text}`;
-        userEvents.appendChild(li);
-      });
+    function saveReminders() {
+      localStorage.setItem('reminders', JSON.stringify(reminders));
+      displayReminders();
     }
 
-    updateLanguage();
-    getTodayDate();
-    getBengaliDate();
-    getTithiAndMoonPhase();
-    loadFestivals();
-    showUserEvents();
+    function toggleLanguage() {
+      const isEnglish = document.getElementById('title').textContent.includes('Bengali');
+      if (isEnglish) {
+        document.getElementById('title').textContent = 'বাংলা কেলেন্ডার';
+        document.getElementById('reminderTitle').textContent = 'আপনার ইভেন্ট / রিমাইন্ডার';
+      } else {
+        document.getElementById('title').textContent = 'Bengali Calendar';
+        document.getElementById('reminderTitle').textContent = 'Your Events / Reminders';
+      }
+    }
+
+    displayReminders();
   </script>
 </body>
 </html>
