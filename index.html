@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bengali Calendar with Reminders</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 10px;
+      background: #f0f8ff;
+    }
+
+    h1, h2, h3 {
+      text-align: center;
+      color: #333;
+    }
+
+    iframe {
+      display: block;
+      margin: 0 auto;
+      max-width: 100%;
+    }
+
+    .event-form, .event-list, .holidays {
+      background: white;
+      margin: 15px auto;
+      padding: 15px;
+      border-radius: 8px;
+      max-width: 500px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .event-form input, .event-form button {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      font-size: 1em;
+      box-sizing: border-box;
+    }
+
+    #toggle-button {
+      display: block;
+      margin: 15px auto;
+      padding: 10px 20px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 1em;
+      cursor: pointer;
+    }
+
+    #toggle-button:hover {
+      background: #0056b3;
+    }
+
+    ul {
+      padding-left: 20px;
+    }
+
+    li {
+      margin-bottom: 8px;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 5px;
+      }
+
+      .event-form, .event-list, .holidays {
+        padding: 10px;
+      }
+
+      .event-form input, .event-form button {
+        font-size: 0.9em;
+        padding: 8px;
+      }
+
+      #toggle-button {
+        font-size: 0.9em;
+        padding: 8px 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Bengali Calendar</h1>
+
+  <iframe
+    src="https://bengalicalendar.com/embed/index.php"
+    frameborder="0"
+    scrolling="no"
+    marginwidth="0"
+    marginheight="0"
+    style="border:0px; overflow:hidden; width:221px; height:205px;"
+    allowtransparency="true">
+  </iframe>
+
+  <button onclick="toggleReminder()" id="toggle-button">Hide Reminder</button>
+
+  <div id="reminder-section" class="event-form">
+    <h2>Add Reminder</h2>
+    <input type="date" id="event-date" />
+    <input type="text" id="event-desc" placeholder="Reminder description" />
+    <button onclick="addEvent()">Add</button>
+  </div>
+
+  <div class="event-list">
+    <h2>Your Reminders</h2>
+    <ul id="event-list"></ul>
+  </div>
+
+  <div class="holidays">
+    <h3>2025 Bengali Holidays (West Bengal)</h3>
+    <ul>
+      <li>Pohela Boishakh – April 14</li>
+      <li>Rath Yatra – June 28</li>
+      <li>Durga Puja (Saptami to Dashami) – October 1–4</li>
+      <li>Lakshmi Puja – October 12</li>
+      <li>Kali Puja / Diwali – October 20</li>
+      <li>Bhai Phonta – October 22</li>
+      <li>Saraswati Puja – February 2</li>
+      <li>Dol Jatra – March 13</li>
+    </ul>
+  </div>
+
+  <script>
+    const eventList = document.getElementById("event-list");
+
+    function loadEvents() {
+      const events = JSON.parse(localStorage.getItem("events") || "[]");
+      eventList.innerHTML = "";
+      events.forEach((event) => {
+        const li = document.createElement("li");
+        li.textContent = `${event.date}: ${event.desc}`;
+        eventList.appendChild(li);
+      });
+    }
+
+    function addEvent() {
+      const date = document.getElementById("event-date").value;
+      const desc = document.getElementById("event-desc").value;
+      if (!date || !desc) return alert("Please enter both date and description.");
+      const events = JSON.parse(localStorage.getItem("events") || "[]");
+      events.push({ date, desc });
+      localStorage.setItem("events", JSON.stringify(events));
+      loadEvents();
+      document.getElementById("event-date").value = "";
+      document.getElementById("event-desc").value = "";
+    }
+
+    function toggleReminder() {
+      const section = document.getElementById("reminder-section");
+      const button = document.getElementById("toggle-button");
+      if (section.style.display === "none") {
+        section.style.display = "block";
+        button.textContent = "Hide Reminder";
+      } else {
+        section.style.display = "none";
+        button.textContent = "Show Reminder";
+      }
+    }
+
+    loadEvents();
+  </script>
+</body>
+</html>
