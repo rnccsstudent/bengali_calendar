@@ -1,0 +1,109 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Noto Sans Bengali', sans-serif;
+  background: #fafafa;
+  margin: 0;
+  padding: 20px;
+  color: #222;
+}
+
+.container {
+  max-width: 480px;
+  margin: 0 auto;
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.1);
+}
+
+h1 {
+  margin-bottom: 5px;
+}
+
+.today-date {
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+  color: #0077b6;
+}
+
+.calendar-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+button {
+  background-color: #0077b6;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+button:hover {
+  background-color: #005f87;
+}
+
+#month-year {
+  font-size: 1.2rem;
+}
+
+.calendar {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.calendar th, .calendar td {
+  border: 1px solid #ddd;
+  text-align: center;
+  padding: 10px;
+  vertical-align: middle;
+  height: 70px;
+}
+
+.calendar td.today {
+  background: #caf0f8;
+  font-weight: bold;
+  border: 2px solid #0077b6;
+}
+
+.calendar td.festival {
+  background: #ffd6d6;
+  font-weight: bold;
+  color: #d00000;
+}
+
+.calendar td span.bengali-date {
+  display: block;
+  font-size: 1.1rem;
+  margin-bottom: 5px;
+}
+
+.calendar td span.gregorian-date {
+  font-size: 0.75rem;
+  color: #666;
+}
+
+@media (max-width: 500px) {
+  body {
+    padding: 10px;
+  }
+  .calendar th, .calendar td {
+    padding: 6px;
+    height: 50px;
+    font-size: 0.9rem;
+  }
+  .today-date {
+    font-size: 1rem;
+  }
+  #month-year {
+    font-size: 1rem;
+  }
+}
