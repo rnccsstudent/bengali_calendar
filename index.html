@@ -58,6 +58,7 @@
 </head>
 <body>
   <h1>Bengali Calendar</h1>
+
   <iframe
     src="https://bengalicalendar.com/embed/index.php"
     frameborder="0"
@@ -68,7 +69,11 @@
     allowtransparency="true">
   </iframe>
 
-  <div class="event-form">
+  <!-- Toggle Reminder Button -->
+  <button onclick="toggleReminder()" id="toggle-button">Hide Reminder</button>
+
+  <!-- Reminder Section -->
+  <div id="reminder-section" class="event-form">
     <h2>Add Reminder</h2>
     <input type="date" id="event-date" />
     <input type="text" id="event-desc" placeholder="Reminder description" />
@@ -100,7 +105,7 @@
     function loadEvents() {
       const events = JSON.parse(localStorage.getItem("events") || "[]");
       eventList.innerHTML = "";
-      events.forEach((event, index) => {
+      events.forEach((event) => {
         const li = document.createElement("li");
         li.textContent = `${event.date}: ${event.desc}`;
         eventList.appendChild(li);
@@ -119,7 +124,20 @@
       document.getElementById("event-desc").value = "";
     }
 
+    function toggleReminder() {
+      const section = document.getElementById("reminder-section");
+      const button = document.getElementById("toggle-button");
+      if (section.style.display === "none") {
+        section.style.display = "block";
+        button.textContent = "Hide Reminder";
+      } else {
+        section.style.display = "none";
+        button.textContent = "Show Reminder";
+      }
+    }
+
     loadEvents();
   </script>
 </body>
+
 </html>
