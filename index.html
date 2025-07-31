@@ -1,115 +1,125 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>বাংলা কেলেন্ডার</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bengali Calendar App</title>
   <style>
     body {
-      font-family: 'Noto Sans Bengali', sans-serif;
+      font-family: Arial, sans-serif;
+      background: #f0f8ff;
+      padding: 20px;
       text-align: center;
-      padding: 20px;
-      background: #f2f2f2;
     }
-    .calendar-container {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 20px;
+    h1 {
+      color: #333;
     }
-    .reminder-section {
-      max-width: 500px;
-      margin: 0 auto;
-      background: white;
-      padding: 20px;
+    iframe {
+      margin: 20px auto;
+      display: block;
+    }
+    .event-form, .event-list {
+      max-width: 400px;
+      margin: 20px auto;
+      background: #fff;
+      padding: 15px;
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-    input, button {
+    .event-form input, .event-form button {
+      margin: 5px 0;
+      width: 100%;
       padding: 10px;
-      margin: 5px;
+      font-size: 1em;
     }
-    #reminderList li {
+    .event-list ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    .event-list li {
+      background: #e6f2ff;
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 5px;
+    }
+    .holidays {
+      max-width: 400px;
+      margin: 20px auto;
       text-align: left;
     }
-    .language-toggle {
-      margin-top: 10px;
+    .holidays h3 {
+      margin-bottom: 10px;
+    }
+    .holidays ul {
+      list-style-type: disc;
+      padding-left: 20px;
     }
   </style>
 </head>
 <body>
+  <h1>Bengali Calendar</h1>
+  <iframe
+    src="https://bengalicalendar.com/embed/index.php"
+    frameborder="0"
+    scrolling="no"
+    marginwidth="0"
+    marginheight="0"
+    style="border:0px; overflow:hidden; width:221px; height:205px;"
+    allowtransparency="true">
+  </iframe>
 
-  <h1 id="title">বাংলা কেলেন্ডার</h1>
-
-  <div class="calendar-container">
-    <iframe
-      src="https://bengalicalendar.com/embed/index.php"
-      frameborder="0"
-      scrolling="no"
-      marginwidth="0"
-      marginheight="0"
-      style="border:0px; overflow:hidden; width:221px; height:205px;"
-      allowtransparency="true">
-    </iframe>
+  <div class="event-form">
+    <h2>Add Reminder</h2>
+    <input type="date" id="event-date" />
+    <input type="text" id="event-desc" placeholder="Reminder description" />
+    <button onclick="addEvent()">Add</button>
   </div>
 
-  <div class="reminder-section">
-    <h2 id="reminderTitle">আপনার ইভেন্ট / রিমাইন্ডার</h2>
-    <input type="text" id="reminderInput" placeholder="লিখুন আপনার রিমাইন্ডার">
-    <button onclick="addReminder()">এড করুন</button>
-    <ul id="reminderList"></ul>
+  <div class="event-list">
+    <h2>Your Reminders</h2>
+    <ul id="event-list"></ul>
   </div>
 
-  <div class="language-toggle">
-    <button onclick="toggleLanguage()">🌍 Switch to English</button>
+  <div class="holidays">
+    <h3>2025 Bengali Holidays (West Bengal)</h3>
+    <ul>
+      <li>Pohela Boishakh – April 14</li>
+      <li>Rath Yatra – June 28</li>
+      <li>Durga Puja (Saptami to Dashami) – October 1–4</li>
+      <li>Lakshmi Puja – October 12</li>
+      <li>Kali Puja / Diwali – October 20</li>
+      <li>Bhai Phonta – October 22</li>
+      <li>Saraswati Puja – February 2</li>
+      <li>Dol Jatra – March 13</li>
+    </ul>
   </div>
 
   <script>
-    const reminders = JSON.parse(localStorage.getItem('reminders') || '[]');
-    const reminderList = document.getElementById('reminderList');
+    const eventList = document.getElementById("event-list");
 
-    function displayReminders() {
-      reminderList.innerHTML = '';
-      reminders.forEach((r, index) => {
-        const li = document.createElement('li');
-        li.textContent = r;
-        const delBtn = document.createElement('button');
-        delBtn.textContent = '❌';
-        delBtn.onclick = () => {
-          reminders.splice(index, 1);
-          saveReminders();
-        };
-        li.appendChild(delBtn);
-        reminderList.appendChild(li);
+    function loadEvents() {
+      const events = JSON.parse(localStorage.getItem("events") || "[]");
+      eventList.innerHTML = "";
+      events.forEach((event, index) => {
+        const li = document.createElement("li");
+        li.textContent = `${event.date}: ${event.desc}`;
+        eventList.appendChild(li);
       });
     }
 
-    function addReminder() {
-      const input = document.getElementById('reminderInput');
-      const value = input.value.trim();
-      if (value) {
-        reminders.push(value);
-        input.value = '';
-        saveReminders();
-      }
+    function addEvent() {
+      const date = document.getElementById("event-date").value;
+      const desc = document.getElementById("event-desc").value;
+      if (!date || !desc) return alert("Please enter both date and description.");
+      const events = JSON.parse(localStorage.getItem("events") || "[]");
+      events.push({ date, desc });
+      localStorage.setItem("events", JSON.stringify(events));
+      loadEvents();
+      document.getElementById("event-date").value = "";
+      document.getElementById("event-desc").value = "";
     }
 
-    function saveReminders() {
-      localStorage.setItem('reminders', JSON.stringify(reminders));
-      displayReminders();
-    }
-
-    function toggleLanguage() {
-      const isEnglish = document.getElementById('title').textContent.includes('Bengali');
-      if (isEnglish) {
-        document.getElementById('title').textContent = 'বাংলা কেলেন্ডার';
-        document.getElementById('reminderTitle').textContent = 'আপনার ইভেন্ট / রিমাইন্ডার';
-      } else {
-        document.getElementById('title').textContent = 'Bengali Calendar';
-        document.getElementById('reminderTitle').textContent = 'Your Events / Reminders';
-      }
-    }
-
-    displayReminders();
+    loadEvents();
   </script>
 </body>
 </html>
